@@ -24,20 +24,7 @@ async function getPublicRoutines() {
     }
 }
 
-async function getActivityByRoutineId(routineId) {
-    try {
-        const { rows: activity } = await client.query(`
-        SELECT * FROM activities 
-        JOIN routine_activities 
-        ON routine_activities."activityId"=activities.id
-        WHERE routine_activities."routineId"=$1;
-        `, [routineId]);
 
-        return activity;
-    } catch (error) {
-        throw error;
-    }
-}
 
 async function getAllRoutinesByUser({ username }) {
     try {
@@ -55,15 +42,48 @@ async function getAllRoutinesByUser({ username }) {
             routine.activities = await getActivityByRoutineId(routine.id);
 
         }
-        console.log(routines[0].activities, 'last flag')
+        
         return routines;
     } catch (error) {
         
     }
 }
 
-async function getPublicRoutinesByActivity({ activityId }) {
+async function getActivityByRoutineId(routineId) {
+    try {
+        const { rows: activity } = await client.query(`
+        SELECT * FROM activities 
+        JOIN routine_activities 
+        ON routine_activities."activityId"=activities.id
+        WHERE routine_activities."routineId"=$1;
+        `, [routineId]);
 
+        return activity;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getPublicRoutinesByActivity({ activityId }) {
+    try {
+        const { rows: routines } = await client.query(`
+        SELECT * FROM routines
+        JOIN routine_activities
+        ON routine_activities."routineId"=routines.id
+        WHERE routine_activities."activityId"=$1
+        AND routines.public=true;
+        `, [activityId]);
+
+        for (i = 0; i < routines.length; i++ ) {
+            const routine = routines[i];
+            routine.activities = await getActivityByRoutineId(routine.id);
+
+        }
+        
+        return routines;
+    } catch (error) {
+        throw error;
+    }
 }
 
 async function createRoutine({ creatorId, public, name, goal }) {
@@ -105,21 +125,27 @@ async function updateRoutine(id,  fields = {} ) {
         throw error;
     }
 }
-
+//*
 async function destroyRoutine(id) {
     try {
+        /* This query must be first because the routine_activity table
+        depends on the routine table */
+        await client.query(`
+        DELETE FROM routine_activities
+        WHERE "routineId"=$1;
+        `, [id])
+
         const { rows } = await client.query(`
         DELETE FROM routines
-        WHERE id=${id};
-        `);
+        WHERE id=$1
+        RETURNING *;
+        `, [id]);
 
         return rows;
     } catch (error) {
         throw error;
     }
 }
-
-getAllRoutines()
 
 module.exports = {
     getAllRoutines,

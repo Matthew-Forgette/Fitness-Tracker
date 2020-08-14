@@ -1,4 +1,6 @@
 const client = require('./client');
+const bcrypt = require('bcrypt');
+const { getAllRoutinesByUser } = require('./routines')
 
 async function getAllUsers() {
     try {
@@ -28,16 +30,43 @@ async function createUser({ username, password }) {
 
 async function getUser({ username, password }) {
     try {
-        const { rows: [user] } = await client.query(`
-        SELECT * FROM users
-        WHERE username=$1;
-        `, [username])
+        const user = await getUserByUsername(username);
+        console.log(user, 'bcrypt user');
+
+        // const passwordsMatch = bcrypt.compareSync(password, user.password);
+        // console.log(passwordsMatch)
+        // if(!passwordsMatch) {
+        //     return;
+        // }
 
         return user;
+        
     } catch (error) {
         throw error;
     }
 }
+
+async function getUserById(userId) {
+    try {
+      const { rows: [ user ] } = await client.query(`
+        SELECT *
+        FROM users
+        WHERE id=${ userId }
+      `);
+  
+      if (!user) {
+          console.log('not user flag')
+        throw {
+          name: "UserNotFoundError",
+          message: "A user with that id does not exist"
+        }
+      }
+  
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
 
 async function getUserByUsername(username) {
     try {
@@ -56,5 +85,6 @@ module.exports = {
     createUser,
     getUser,
     getAllUsers,
-    getUserByUsername
+    getUserByUsername,
+    getUserById
 }

@@ -16,7 +16,7 @@ const {
     addActivityToRoutine,
     updateRoutineActivity,
     destroyRoutineActivity,
-    testFunc
+    getAllRoutineActivities
 } = require('./index')
 
 const client = require('./client')
@@ -118,7 +118,9 @@ async function createInitialUsers() {
 
 async function createInitialActivities() {
     try {
-  
+      
+      console.log('Starting to create activities...')
+
       await createActivity({
         name: 'push-ups ',
         description: 'Raising and lowering your torso while in a prone position by bending and straightening your arms'
@@ -135,6 +137,8 @@ async function createInitialActivities() {
         Position one: Standing with your legs together and hands by your side. 
         Position two: Standing with your legs apart and your arms raised above your head`
       });
+
+      console.log('Finished creating activities...')
     } catch(error) {
       throw error;
     }
@@ -142,6 +146,8 @@ async function createInitialActivities() {
 
 async function createInitialRoutines() {
     try {
+      console.log('Starting to createInitialRoutines...');
+
         const allUsers = await getAllUsers();
         const johnny = allUsers[0]
         const tayla = allUsers[1]
@@ -168,7 +174,7 @@ async function createInitialRoutines() {
             goal: "Become a pro player"
         });
 
-        
+       console.log('Finished creating initial routines'); 
     } catch (error) {
         throw error;
     }
@@ -176,6 +182,8 @@ async function createInitialRoutines() {
 
 async function createInitialRoutineActivities() {
     try {
+      console.log('Starting to add activities to initial routines...');
+
       await addActivityToRoutine({
         routineId: 1,
         activityId: 1,
@@ -188,28 +196,32 @@ async function createInitialRoutineActivities() {
         activityId: 2,
         count: 5,
         duration: 10
-      })
+      });
 
       await addActivityToRoutine({
         routineId: 3,
         activityId: 3,
         count: 10,
         duration: 10
-      })
+      });
 
       await addActivityToRoutine({
         routineId: 1,
         activityId: 2,
         count: 5,
         duration: 5
-      })
+      });
 
       await addActivityToRoutine({
         routineId: 2,
         activityId: 3,
         count: 10,
         duration: 5
-      })
+      });
+
+
+      console.log('Finished adding activities to initial routines...');
+
     } catch (error) {
       throw error;
     }
@@ -219,9 +231,9 @@ async function testDB() {
     try {
         console.log('Starting to test database...');
 
-        // console.log('Calling getUser...');
-        // const user = await getUser({username: "Johnny_moi", password: 'clownfish'});
-        // console,log('Result:', user)
+        console.log('Calling getUser...');
+        const user = await getUser({username: "Johnny_moi", password: 'clownfish'});
+        console.log('Result:', user)
 
         console.log("Calling getAllUsers");
         const users = await getAllUsers();
@@ -250,6 +262,12 @@ async function testDB() {
         const publicRoutines = await getPublicRoutines();
         console.log('Results:', publicRoutines);
 
+        //
+        //
+        console.log('Calling getPublicRoutineByActivity...');
+        const publicRoutinesByActivityResult = await getPublicRoutinesByActivity({activityId: 1});
+        console.log('Result:', publicRoutinesByActivityResult)
+
         console.log('Calling updateRoutines...');
         const [ johnny, tayla, nick ] = await getAllUsers();
         console.log(johnny, 'johnny flag')
@@ -263,22 +281,22 @@ async function testDB() {
 
         console.log('Calling getAllRoutinesByUser...');
         const userRoutinesResult = await getAllRoutinesByUser({username: tayla.username});
-        console.log('Result:', userRoutinesResult)
+        console.log('Result:', userRoutinesResult);
+
+        console.log('Calling updateRoutineActivity...');
+        const updatedRoutineActivity = await updateRoutineActivity(1, {
+          count: 15,
+           duration: 10
+          });
+        console.log('Result:', updatedRoutineActivity)
 
         console.log('Calling destroyRoutine...');
-        const destroyRoutineResult = await destroyRoutine(1);
+        const destroyRoutineResult = await destroyRoutine(2);
         console.log('Remaining routines:', await getAllRoutines());
 
-        console.log("Calling addActivityToRoutine...");
-        const addRoutineActivity = await addActivityToRoutine({
-          routineId: 2,
-          activityId: 3,
-          count: 10,
-          duration: 5
-        })
-        console.log('Result:', addRoutineActivity)
-
-        
+        console.log('Calling destroyRoutineActivity...');
+        const destroyedRoutineActivity = await destroyRoutineActivity(3);
+        console.log('Result:', await getAllRoutineActivities());
 
     } catch (error) {
         
