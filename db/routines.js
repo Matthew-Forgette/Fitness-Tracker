@@ -45,7 +45,34 @@ async function getAllRoutinesByUser({ username }) {
         
         return routines;
     } catch (error) {
+        throw error;
+    }
+}
+
+async function getPublicRoutinesByUser({ username }) {
+    try {
+        console.log('entry')
+        console.log(username, 'user in allPublicRoutinesByUser');
+
+        const user = await getUserByUsername(username);
+        console.log(user, 'user flag(public)')
+
+
+        const { rows: routines } = await client.query(`
+        SELECT * FROM routines
+        WHERE "creatorId"=$1
+        AND public=true;
+        `, [user.id]);
+
+        for (i = 0; i < routines.length; i++ ) {
+            const routine = routines[i];
+            routine.activities = await getActivityByRoutineId(routine.id);
+
+        }
         
+        return routines;
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -151,6 +178,7 @@ module.exports = {
     getAllRoutines,
     getPublicRoutines,
     getAllRoutinesByUser,
+    getPublicRoutinesByUser,
     getPublicRoutinesByActivity,
     createRoutine,
     updateRoutine,

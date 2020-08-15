@@ -9,6 +9,7 @@ const {
     getAllRoutines,
     getPublicRoutines,
     getAllRoutinesByUser,
+    getPublicRoutinesByUser,
     getPublicRoutinesByActivity,
     createRoutine,
     updateRoutine,
@@ -106,7 +107,7 @@ async function createInitialUsers() {
           location: 'Jacksonville'
         });
 
-        console.log(johnny, tayla, nick);
+        console.log(tayla, nick);
 
         console.log('Finished creating user!');
     } catch(error) {
@@ -231,72 +232,74 @@ async function testDB() {
     try {
         console.log('Starting to test database...');
 
-        console.log('Calling getUser...');
-        const user = await getUser({username: "Johnny_moi", password: 'clownfish'});
-        console.log('Result:', user)
+        // console.log('Calling getUser...');
+        // const user = await getUser({username: "Johnny_moi", password: 'clownfish'});
+        // console.log('Result:', user)
 
-        console.log("Calling getAllUsers");
-        const users = await getAllUsers();
-        console.log("Result:", users);
+        // console.log("Calling getAllUsers");
+        // const users = await getAllUsers();
+        // console.log("Result:", users);
 
         console.log('Calling getUserByUsername...');
         const johnnyTest = await getUserByUsername('Johnny_moi');
         console.log('Result:', johnnyTest);
 
-        console.log('Calling getAllActivities...');
-        const activities = await getAllActivities();
-        console.log('Result:', activities);
+        // console.log('Calling getAllActivities...');
+        // const activities = await getAllActivities();
+        // console.log('Result:', activities);
 
-        console.log('Calling updateAcitvities on activity[1]...');
-        const updateActivityResult = await updateActivity( 1, { 
-            name: 'New activity',
-            description: 'New activity description'
-        });
-        console.log('Result:', updateActivityResult);
+        // console.log('Calling updateAcitvities on activity[1]...');
+        // const updateActivityResult = await updateActivity( 1, { 
+        //     name: 'New activity',
+        //     description: 'New activity description'
+        // });
+        // console.log('Result:', updateActivityResult);
 
-        console.log('Calling getAllRoutines...');
-        const routines = await getAllRoutines();
-        console.log('Results:', routines);
+        // console.log('Calling getAllRoutines...');
+        // const routines = await getAllRoutines();
+        // console.log('Results:', routines);
 
-        console.log('Calling getPublicRoutines...');
-        const publicRoutines = await getPublicRoutines();
-        console.log('Results:', publicRoutines);
+        // console.log('Calling getPublicRoutines...');
+        // const publicRoutines = await getPublicRoutines();
+        // console.log('Results:', publicRoutines);
 
         //
-        //
-        console.log('Calling getPublicRoutineByActivity...');
-        const publicRoutinesByActivityResult = await getPublicRoutinesByActivity({activityId: 1});
-        console.log('Result:', publicRoutinesByActivityResult)
+        // //
+        // console.log('Calling getAllRoutinesByUser...');
+        // const userRoutinesResult = await getAllRoutinesByUser({username: 'Johnny_moi'});
+        // console.log('Result:', userRoutinesResult);
 
-        console.log('Calling updateRoutines...');
-        const [ johnny, tayla, nick ] = await getAllUsers();
-        console.log(johnny, 'johnny flag')
-        const updatedRoutine = await updateRoutine(1, {
-            creatorId: johnny.id,
-            public: false,
-            name: "Closed clown routine**",
-            goal: "Be able to swim like a clownfish"
-        });
-        console.log('Results:', updatedRoutine);
+        console.log('Calling getPublicRoutinesByUser...');
+        const publicRoutinesByUserResult = await getPublicRoutinesByUser({username: 'Johnny_moi'});
+        console.log('Result:', publicRoutinesByUserResult)
 
-        console.log('Calling getAllRoutinesByUser...');
-        const userRoutinesResult = await getAllRoutinesByUser({username: tayla.username});
-        console.log('Result:', userRoutinesResult);
+        // console.log('Calling updateRoutines...');
+        // const [ johnny, tayla, nick ] = await getAllUsers();
+        // console.log(johnny, 'johnny flag')
+        // const updatedRoutine = await updateRoutine(1, {
+        //     creatorId: johnny.id,
+        //     public: false,
+        //     name: "Closed clown routine**",
+        //     goal: "Be able to swim like a clownfish"
+        // });
+        // console.log('Results:', updatedRoutine);
 
-        console.log('Calling updateRoutineActivity...');
-        const updatedRoutineActivity = await updateRoutineActivity(1, {
-          count: 15,
-           duration: 10
-          });
-        console.log('Result:', updatedRoutineActivity)
+        // 
 
-        console.log('Calling destroyRoutine...');
-        const destroyRoutineResult = await destroyRoutine(2);
-        console.log('Remaining routines:', await getAllRoutines());
+        // console.log('Calling updateRoutineActivity...');
+        // const updatedRoutineActivity = await updateRoutineActivity(1, {
+        //   count: 15,
+        //    duration: 10
+        //   });
+        // console.log('Result:', updatedRoutineActivity)
 
-        console.log('Calling destroyRoutineActivity...');
-        const destroyedRoutineActivity = await destroyRoutineActivity(3);
-        console.log('Result:', await getAllRoutineActivities());
+        // console.log('Calling destroyRoutine...');
+        // const destroyRoutineResult = await destroyRoutine(2);
+        // console.log('Remaining routines:', await getAllRoutines());
+
+        // console.log('Calling destroyRoutineActivity...');
+        // const destroyedRoutineActivity = await destroyRoutineActivity(3);
+        // console.log('Result:', await getAllRoutineActivities());
 
     } catch (error) {
         

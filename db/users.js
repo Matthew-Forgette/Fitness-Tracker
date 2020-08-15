@@ -1,6 +1,5 @@
 const client = require('./client');
 const bcrypt = require('bcrypt');
-const { getAllRoutinesByUser } = require('./routines')
 
 async function getAllUsers() {
     try {
@@ -33,11 +32,11 @@ async function getUser({ username, password }) {
         const user = await getUserByUsername(username);
         console.log(user, 'bcrypt user');
 
-        // const passwordsMatch = bcrypt.compareSync(password, user.password);
-        // console.log(passwordsMatch)
-        // if(!passwordsMatch) {
-        //     return;
-        // }
+        const passwordsMatch = bcrypt.compareSync(password, user.password);
+        console.log(passwordsMatch)
+        if(!passwordsMatch) {
+            return;
+        }
 
         return user;
         
@@ -70,11 +69,12 @@ async function getUserById(userId) {
 
 async function getUserByUsername(username) {
     try {
-        
+        console.log('users.js entry')
         const { rows: [user] } = await client.query(`
             SELECT * FROM users
             WHERE username=$1;
-        `, [username])
+        `, [username]);
+        console.log(user, 'users.js flag')
         return user;
     } catch (error) {
         throw error;
