@@ -7,10 +7,11 @@ const {
   getAllUsers,
   getUserByUsername,
   getUser,
-  getAllRoutinesByUser
+  getPublicRoutinesByUser
 } = require('../db');
 
 const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'developement';
 const bcrypt = require('bcrypt');
 
 usersRouter.get('/', async (req, res, next) => {
@@ -46,7 +47,6 @@ usersRouter.post('/register', async (req, res, next) => {
       let securedPassword;
 
 		  bcrypt.hash(password, SALT_COUNT, async (err, hashedPassword) => {
-			  console.log(hashedPassword);
 			  securedPassword = hashedPassword;
 			  const newUser = await createUser({ username, password: securedPassword });
         // JWT stuff
@@ -75,21 +75,30 @@ usersRouter.post('/login', async (req, res, next) => {
     }
 
     const user = await getUser({username, password});
-    console.log(user, 'inside /login route flag');
 
-    res.send(user)
+    const token = jwt.sign({ 
+      id: user.id, 
+      username
+    }, JWT_SECRET, {
+      expiresIn: '1w'
+    });
+
+    res.send({user, token})
   } catch (error) {
     next(error);
   }
 });
 
-// usersRouter.get('/:username/routines', async (req, res, next) => {
-//   try {
-//     await 
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+usersRouter.get('/:username/routines', async (req, res, next) => {
+  try {
+    const username = req.params.username
+    const publicRoutines = await getPublicRoutinesByUser({username})
+
+    res.send(publicRoutines);
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 

@@ -20,7 +20,6 @@ async function createUser({ username, password }) {
             RETURNING *;
         `, [username, password])
 
-        console.log(user, 'flag')
         return user;
     } catch(error) {
         throw error;
@@ -30,10 +29,8 @@ async function createUser({ username, password }) {
 async function getUser({ username, password }) {
     try {
         const user = await getUserByUsername(username);
-        console.log(user, 'bcrypt user');
 
         const passwordsMatch = bcrypt.compareSync(password, user.password);
-        console.log(passwordsMatch)
         if(!passwordsMatch) {
             return;
         }
@@ -54,7 +51,6 @@ async function getUserById(userId) {
       `);
   
       if (!user) {
-          console.log('not user flag')
         throw {
           name: "UserNotFoundError",
           message: "A user with that id does not exist"
@@ -69,12 +65,10 @@ async function getUserById(userId) {
 
 async function getUserByUsername(username) {
     try {
-        console.log('users.js entry')
         const { rows: [user] } = await client.query(`
             SELECT * FROM users
             WHERE username=$1;
         `, [username]);
-        console.log(user, 'users.js flag')
         return user;
     } catch (error) {
         throw error;

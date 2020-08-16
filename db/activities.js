@@ -11,6 +11,20 @@ async function getAllActivities() {
     } 
 }
 
+async function getActivityById(id) {
+    try {
+        const { rows } = await client.query(`
+        SELECT * 
+        FROM activities
+        WHERE id=$1;
+        `, [id]);
+
+        return rows;        
+    } catch (error) {
+        throw error;
+    }
+}
+
 async function createActivity({ name, description }) {
     try {
         const { rows: [activity] } = await client.query(`
@@ -28,7 +42,6 @@ async function createActivity({ name, description }) {
 }
 
 async function updateActivity( id, fields = {} ) {
-    console.log('early return flag')  
 
     const { activities } = fields
     delete fields.activities
@@ -42,7 +55,6 @@ async function updateActivity( id, fields = {} ) {
         
         return;
     } 
-    console.log(setString, 'set string flag')
     try {
         const { rows: [activity] } = await client.query(`
         UPDATE activities
@@ -62,5 +74,6 @@ async function updateActivity( id, fields = {} ) {
 module.exports = {
     getAllActivities,
     createActivity,
-    updateActivity
+    updateActivity,
+    getActivityById
 }

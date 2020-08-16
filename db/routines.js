@@ -30,8 +30,6 @@ async function getAllRoutinesByUser({ username }) {
     try {
         const user = await getUserByUsername(username);
 
-        console.log(username, 'user in allRoutinesByUser');
-
         const { rows: routines } = await client.query(`
         SELECT * FROM routines
         WHERE "creatorId"=$1;
@@ -51,12 +49,7 @@ async function getAllRoutinesByUser({ username }) {
 
 async function getPublicRoutinesByUser({ username }) {
     try {
-        console.log('entry')
-        console.log(username, 'user in allPublicRoutinesByUser');
-
         const user = await getUserByUsername(username);
-        console.log(user, 'user flag(public)')
-
 
         const { rows: routines } = await client.query(`
         SELECT * FROM routines

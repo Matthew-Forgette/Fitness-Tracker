@@ -4,6 +4,7 @@ const {
     getAllUsers,
     getUserByUsername,
     getAllActivities,
+    getActivityById,
     createActivity,
     updateActivity,
     getAllRoutines,
@@ -23,9 +24,7 @@ const {
 const client = require('./client')
 
 async function createTables() {
-    try {
-      console.log("Starting to build tables...");
-  
+    try {  
       await client.query(`
         CREATE TABLE users (
           id SERIAL PRIMARY KEY,
@@ -57,17 +56,13 @@ async function createTables() {
         );
       `);
   
-      console.log("Finished building tables!");
     } catch (error) {
-      console.error("Error building tables!");
       throw error;
     }
 }
 
 async function dropTables() {
-    try {
-      console.log("Starting to drop tables...");
-  
+    try {  
       await client.query(`
         DROP TABLE IF EXISTS routine_activities;
         DROP TABLE IF EXISTS activities;
@@ -75,17 +70,13 @@ async function dropTables() {
         DROP TABLE IF EXISTS users;
       `);
   
-      console.log("Finished dropping tables!");
     } catch (error) {
-      console.error("Error dropping tables!");
       throw error;
     }
 }
 
 async function createInitialUsers() {
     try {
-        console.log('Starting to creat users...');
-
         const johnny = await createUser({
           username: 'Johnny_moi', 
           password: 'clownfish', 
@@ -106,12 +97,7 @@ async function createInitialUsers() {
           name: 'Nick Pitz', 
           location: 'Jacksonville'
         });
-
-        console.log(tayla, nick);
-
-        console.log('Finished creating user!');
     } catch(error) {
-        console.log("Error creating users!");
         throw error;
     }
 }
@@ -119,9 +105,6 @@ async function createInitialUsers() {
 
 async function createInitialActivities() {
     try {
-      
-      console.log('Starting to create activities...')
-
       await createActivity({
         name: 'push-ups ',
         description: 'Raising and lowering your torso while in a prone position by bending and straightening your arms'
@@ -139,7 +122,6 @@ async function createInitialActivities() {
         Position two: Standing with your legs apart and your arms raised above your head`
       });
 
-      console.log('Finished creating activities...')
     } catch(error) {
       throw error;
     }
@@ -147,7 +129,6 @@ async function createInitialActivities() {
 
 async function createInitialRoutines() {
     try {
-      console.log('Starting to createInitialRoutines...');
 
         const allUsers = await getAllUsers();
         const johnny = allUsers[0]
@@ -175,7 +156,6 @@ async function createInitialRoutines() {
             goal: "Become a pro player"
         });
 
-       console.log('Finished creating initial routines'); 
     } catch (error) {
         throw error;
     }
@@ -183,7 +163,6 @@ async function createInitialRoutines() {
 
 async function createInitialRoutineActivities() {
     try {
-      console.log('Starting to add activities to initial routines...');
 
       await addActivityToRoutine({
         routineId: 1,
@@ -220,91 +199,11 @@ async function createInitialRoutineActivities() {
         duration: 5
       });
 
-
-      console.log('Finished adding activities to initial routines...');
-
     } catch (error) {
       throw error;
     }
 }
 
-async function testDB() {
-    try {
-        console.log('Starting to test database...');
-
-        // console.log('Calling getUser...');
-        // const user = await getUser({username: "Johnny_moi", password: 'clownfish'});
-        // console.log('Result:', user)
-
-        // console.log("Calling getAllUsers");
-        // const users = await getAllUsers();
-        // console.log("Result:", users);
-
-        console.log('Calling getUserByUsername...');
-        const johnnyTest = await getUserByUsername('Johnny_moi');
-        console.log('Result:', johnnyTest);
-
-        // console.log('Calling getAllActivities...');
-        // const activities = await getAllActivities();
-        // console.log('Result:', activities);
-
-        // console.log('Calling updateAcitvities on activity[1]...');
-        // const updateActivityResult = await updateActivity( 1, { 
-        //     name: 'New activity',
-        //     description: 'New activity description'
-        // });
-        // console.log('Result:', updateActivityResult);
-
-        // console.log('Calling getAllRoutines...');
-        // const routines = await getAllRoutines();
-        // console.log('Results:', routines);
-
-        // console.log('Calling getPublicRoutines...');
-        // const publicRoutines = await getPublicRoutines();
-        // console.log('Results:', publicRoutines);
-
-        //
-        // //
-        // console.log('Calling getAllRoutinesByUser...');
-        // const userRoutinesResult = await getAllRoutinesByUser({username: 'Johnny_moi'});
-        // console.log('Result:', userRoutinesResult);
-
-        console.log('Calling getPublicRoutinesByUser...');
-        const publicRoutinesByUserResult = await getPublicRoutinesByUser({username: 'Johnny_moi'});
-        console.log('Result:', publicRoutinesByUserResult)
-
-        // console.log('Calling updateRoutines...');
-        // const [ johnny, tayla, nick ] = await getAllUsers();
-        // console.log(johnny, 'johnny flag')
-        // const updatedRoutine = await updateRoutine(1, {
-        //     creatorId: johnny.id,
-        //     public: false,
-        //     name: "Closed clown routine**",
-        //     goal: "Be able to swim like a clownfish"
-        // });
-        // console.log('Results:', updatedRoutine);
-
-        // 
-
-        // console.log('Calling updateRoutineActivity...');
-        // const updatedRoutineActivity = await updateRoutineActivity(1, {
-        //   count: 15,
-        //    duration: 10
-        //   });
-        // console.log('Result:', updatedRoutineActivity)
-
-        // console.log('Calling destroyRoutine...');
-        // const destroyRoutineResult = await destroyRoutine(2);
-        // console.log('Remaining routines:', await getAllRoutines());
-
-        // console.log('Calling destroyRoutineActivity...');
-        // const destroyedRoutineActivity = await destroyRoutineActivity(3);
-        // console.log('Result:', await getAllRoutineActivities());
-
-    } catch (error) {
-        
-    }
-}
 
 async function rebuildDB() {
     try {
@@ -322,6 +221,5 @@ async function rebuildDB() {
 }
 
 rebuildDB()
-    .then(testDB)
     .catch(console.error)
     .finally(() => client.end());
